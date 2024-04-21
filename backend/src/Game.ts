@@ -42,11 +42,13 @@ export class Game {
         if (this.board.moves.length % 2 !== 0 && socket === this.player2) {
             return;
         }
+        console.log("did not early return ")
         try {
             this.board.move(move);
         } catch (e) {
             return;
         }
+        console.log("move succeed ")
         if (this.board.isGameOver()) {
             this.player1.emit(
                 JSON.stringify({
@@ -58,15 +60,18 @@ export class Game {
             );
             return;
         }
+        console.log("sending move ")
         if (this.board.moves.length % 2 === 0) {
-            this.player2.emit(
+            console.log("sent1")
+            this.player2.send(
                 JSON.stringify({
                     type: MOVE,
                     payload: move,
                 })
             );
         } else {
-            this.player1.emit(
+            console.log("sent2")
+            this.player1.send(
                 JSON.stringify({
                     type: MOVE,
                     payload: move,

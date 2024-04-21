@@ -2,11 +2,6 @@ import { Game } from './Game';
 import WebSocket from "ws";
 import { INIT_GAME, MOVE } from "./Messages";
 
-interface GameProps {
-    name: string; // Not used in the provided code, consider removing if unnecessary
-    player1: WebSocket;
-    player2: WebSocket;
-}
 
 export class GameManager {
     private games: Game[]; // Change to store Game instances directly
@@ -41,8 +36,10 @@ export class GameManager {
                 }
             }
             else if (message.type === MOVE) {
-                const game = this.games.find(game => game.player1 === socket || game.player2 === socket);
+                console.log("inside the move")
+                const game = this.games.find(game => game.player1 === (socket) || game.player2 === socket);
                 if (game) {
+                    console.log(socket)
                     game.makeMove(socket, message.move);
                 }
             }
