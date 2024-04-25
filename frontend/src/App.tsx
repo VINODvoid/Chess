@@ -1,15 +1,20 @@
 import './App.css'
+import { BrowserRouter , Routes , Route  } from 'react-router-dom'
+import Landing from "./screens/Landing"
+import Game from "./screens/Game"
 
 function App() {
   return (
-    <>
-    <h1 className="text-3xl font-3xl border shadow-lime-600g" >
-      Hello world!
-    </h1>
-      <button>
-        Join Room
-      </button>
-    </>
+    <div className='h-screen bg-slate-950'>
+    <BrowserRouter basename='/'>
+    <Routes>
+      <Route path='/' element={<Landing/>}/>
+      <Route path='/game' element={<Game/>}/>
+
+    </Routes>
+    </BrowserRouter>
+
+    </div>
   )
 }
 
