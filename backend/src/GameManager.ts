@@ -4,24 +4,30 @@ import { INIT_GAME, MOVE } from "./Messages";
 
 
 export class GameManager {
-    private games: Game[]; // Change to store Game instances directly
-    private pendingUser: WebSocket | null; // Change to store a single WebSocket
+    public games: Game[]; 
+    private pendingUser: WebSocket | null; 
+    private users : WebSocket[];
 
     constructor() {
         this.games = [];
         this.pendingUser = null;
+        this.users =[];
     }
 
+
+
+    
     addUser(socket: WebSocket) {
+        this.users.push(socket);
         this.addHandler(socket);
     }
 
     removeUser(socket: WebSocket) {
-        this.removeHandler(socket);
+        this.users = this.users.filter(user => user !== socket);
     }
 
     private addHandler(socket: WebSocket) {
-        socket.on("message", (data: WebSocket.Data) => {
+        socket.on("message", (data) => {
             const message = JSON.parse(data.toString());
 
             if (message.type === INIT_GAME) {
@@ -35,13 +41,16 @@ export class GameManager {
                     this.pendingUser = socket;
                 }
             }
-            else if (message.type === MOVE) {
+            if (message.type === MOVE) {
                 console.log("inside the move")
-                const game = this.games.find(game => game.player1 === (socket) || game.player2 === socket);
-                if (game) {
-                    console.log(socket)
+                const game = this.games.find(game => game.player1 === socket || game.player2 === socket);
+                console.log(game)
+                    if (game) {
+                    console.log("inside the game")
                     game.makeMove(socket, message.move);
+                    console.log("after the game")
                 }
+                
             }
         });
     }
