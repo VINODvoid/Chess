@@ -45,16 +45,18 @@ const Game = () => {
   return (
     <div className="flex justify-center ">
       <div className="w-full max-w-screen-lg pt-8">
-        <div className="grid w-full gap-4 grid-col-8">
-          <div className="flex justify-center w-full bg-red-300">
-            <ChessBoard board={board}/>
+        <div className="grid w-full gap-4 grid-col-2">
+          <div className="flex justify-center w-full">
+            <ChessBoard board={board} socket={socket}/>
           </div>
-          <div className="w-full col-span-4 bg-green-700">
-            <Button onClick={() => {
+          <div className="flex justify-center w-full bg-slate-900">
+            <div className="pt-8"> 
+              <Button onClick={() => {
               socket.send(JSON.stringify({ type: INIT_GAME }))
             }}>
               Play Online
             </Button>
+            </div>
           </div>
         </div>
 

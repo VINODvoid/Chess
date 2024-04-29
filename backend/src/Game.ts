@@ -7,6 +7,7 @@ export class Game {
     public player2: WebSocket;
     public board: Chess;
     private startDate: Date;
+
     constructor(player1: WebSocket, player2: WebSocket) {
         this.player1 = player1;
         this.player2 = player2;
@@ -29,50 +30,32 @@ export class Game {
             })
         );
     }
-    makeMove(
-        socket: WebSocket,
-        move: {
-            from: string;
-            to: string;
-        }
-    ) {
-        if (this.board.moves.length % 2 === 0 && socket === this.player1) {
-            return;
-        }
-        if (this.board.moves.length % 2 !== 0 && socket === this.player2) {
-            return;
-        }
-        console.log("did not early return ");
-        try {
-            this.board.move(move);
-        } catch (e) {
-            return;
-        }
-        if (this.board.isGameOver()) {
-            this.player1.emit(
-                JSON.stringify({
-                    type: GAME_OVER,
-                    payload: {
-                        winner: this.board.turn() === "w" ? "black" : "white",
-                    },
-                })
-            );
-            return;
-        }
-        if (this.board.moves.length % 2 === 0) {
-            this.player2.send(
-                JSON.stringify({
-                    type: MOVE,
-                    payload: move
-                })
-            );
+
+    makeMove(socket: WebSocket, move: { from: string; to: string; }) {
+        // Check if the move is valid for the current player
+        if ((this.board.moves.length % 2 === 0 && socket === this.player1) ||
+            (this.board.moves.length % 2 !== 0 && socket === this.player2)) {
+            try {
+                this.board.move(move);
+                const moveMessage = JSON.stringify({ type: MOVE, payload: move });
+    
+                // Send the move to both players
+                this.player1.send(moveMessage);
+                this.player2.send(moveMessage);
+    
+                // Check for game over
+                if (this.board.isGameOver()) {
+                    const winner = this.board.turn() === 'w' ? 'black' : 'white';
+                    const gameOverMessage = JSON.stringify({ type: GAME_OVER, payload: { winner } });
+                    this.player1.send(gameOverMessage);
+                    this.player2.send(gameOverMessage);
+                }
+            } catch (error) {
+                console.error("Invalid move:", error);
+            }
         } else {
-            this.player1.send(
-                JSON.stringify({
-                    type: MOVE,
-                    payload: move
-                })
-            );
+            console.error("Not your turn or invalid move!");
         }
     }
+    
 }
